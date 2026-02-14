@@ -37,7 +37,7 @@ jobs:
 
       - name: Wait for Postgres to be ready
         run: |
-          echo "Waiting for Postgres to be ready..."
+          echo "Waiting for Postgres..."
           until pg_isready -h localhost -p 5432 -U quarkus_test; do
             sleep 2
           done
@@ -62,10 +62,11 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: false
 
+      # ✅ Dependency graph step using correct @v2 action
       - name: Update dependency graph
         if: github.repository_owner == github.actor || github.event_name == 'push'
         uses: github/advanced-security/maven-dependency-submission-action@v2
         with:
           directory: ./java-assignment
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} # use a PAT if default GITHUB_TOKEN lacks permissions
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} # Add PAT in repo secrets if needed
