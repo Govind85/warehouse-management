@@ -54,13 +54,11 @@ jobs:
             -Dquarkus.datasource.devservices.enabled=false \
             --file pom.xml
 
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
+      - name: Upload Jacoco coverage as artifact
+        uses: actions/upload-artifact@v3
         with:
-          files: ./java-assignment/target/jacoco-report/jacoco.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
+          name: jacoco-report
+          path: ./java-assignment/target/jacoco-report/
 
       - name: Generate Maven dependency report
         working-directory: ./java-assignment
