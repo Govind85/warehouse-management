@@ -135,7 +135,8 @@ public class StoreResource {
   @Provider
   public static class ErrorMapper implements ExceptionMapper<Exception> {
 
-    @Inject ObjectMapper objectMapper;
+    @Inject
+    public ObjectMapper objectMapper;
 
     @Override
     public Response toResponse(Exception exception) {

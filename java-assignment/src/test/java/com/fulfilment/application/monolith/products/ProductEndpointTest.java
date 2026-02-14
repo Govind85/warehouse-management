@@ -107,4 +107,40 @@ public class ProductEndpointTest {
         .then()
         .statusCode(200);
   }
+
+  @Test
+  public void testErrorMapperForNotFound() {
+    given()
+        .when()
+        .get("product/999")
+        .then()
+        .statusCode(404)
+        .body("code", equalTo(404))
+        .body("error", containsString("does not exist"));
+  }
+
+  @Test
+  public void testErrorMapperForInvalidRequest() {
+    given()
+        .contentType(ContentType.JSON)
+        .body("{\"id\":1,\"name\":\"Test\",\"type\":\"Test\"}")
+        .when()
+        .post("product")
+        .then()
+        .statusCode(422)
+        .body("code", equalTo(422))
+        .body("error", containsString("Id was invalidly set"));
+  }
+
+  @Test
+  public void testErrorMapperForGenericException() {
+    given()
+        .contentType(ContentType.JSON)
+        .body("invalid json")
+        .when()
+        .post("product")
+        .then()
+        .statusCode(400)
+        .body("code", equalTo(400));
+  }
 }

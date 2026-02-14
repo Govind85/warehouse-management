@@ -148,4 +148,84 @@ public class CreateWarehouseUseCaseTest {
     assertEquals(422, exception.getResponse().getStatus());
     assertTrue(exception.getMessage().contains("Stock exceeds warehouse capacity"));
   }
+
+  @Test
+  void create_nullLocation_shouldFail() {
+    Warehouse warehouse = new Warehouse();
+    warehouse.businessUnitCode = "WH-001";
+    warehouse.location = null;
+    warehouse.capacity = 100;
+    warehouse.stock = 50;
+
+    WarehouseRepository mockRepo = new WarehouseRepository() {
+      @Override
+      public Warehouse findByBusinessUnitCode(String buCode) {
+        return null;
+      }
+    };
+    
+    QuarkusMock.installMockForType(mockRepo, WarehouseRepository.class);
+
+    WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
+      useCase.create(warehouse);
+    });
+
+    assertEquals(422, exception.getResponse().getStatus());
+  }
+
+  @Test
+  void create_nullCapacity_shouldFail() {
+    Warehouse warehouse = new Warehouse();
+    warehouse.businessUnitCode = "WH-001";
+    warehouse.location = "ZWOLLE-001";
+    warehouse.capacity = null;
+    warehouse.stock = 50;
+
+    WarehouseRepository mockRepo = new WarehouseRepository() {
+      @Override
+      public Warehouse findByBusinessUnitCode(String buCode) {
+        return null;
+      }
+      @Override
+      public List<Warehouse> getAll() {
+        return new ArrayList<>();
+      }
+    };
+    
+    QuarkusMock.installMockForType(mockRepo, WarehouseRepository.class);
+
+    WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
+      useCase.create(warehouse);
+    });
+
+    assertEquals(422, exception.getResponse().getStatus());
+  }
+
+  @Test
+  void create_nullStock_shouldFail() {
+    Warehouse warehouse = new Warehouse();
+    warehouse.businessUnitCode = "WH-001";
+    warehouse.location = "ZWOLLE-001";
+    warehouse.capacity = 100;
+    warehouse.stock = null;
+
+    WarehouseRepository mockRepo = new WarehouseRepository() {
+      @Override
+      public Warehouse findByBusinessUnitCode(String buCode) {
+        return null;
+      }
+      @Override
+      public List<Warehouse> getAll() {
+        return new ArrayList<>();
+      }
+    };
+    
+    QuarkusMock.installMockForType(mockRepo, WarehouseRepository.class);
+
+    WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
+      useCase.create(warehouse);
+    });
+
+    assertEquals(422, exception.getResponse().getStatus());
+  }
 }
