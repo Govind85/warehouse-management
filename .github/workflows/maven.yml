@@ -64,7 +64,7 @@ jobs:
 
       - name: Update dependency graph
         if: github.repository_owner == github.actor || github.event_name == 'push'
-        uses: github/advanced-security/maven-dependency-submission-action@v1
+        uses: github/advanced-security/maven-dependency-submission-action@v2
         with:
           directory: ./java-assignment
         env:
