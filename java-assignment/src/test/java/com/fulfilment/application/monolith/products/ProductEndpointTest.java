@@ -40,12 +40,12 @@ public class ProductEndpointTest {
   public void testCreateProduct() {
     given()
         .contentType(ContentType.JSON)
-        .body("{\"name\":\"HEMNES\",\"type\":\"Bed frame\"}")
+        .body("{\"name\":\"EKTORP\",\"type\":\"Sofa\"}")
         .when()
         .post("product")
         .then()
         .statusCode(201)
-        .body("name", equalTo("HEMNES"));
+        .body("name", equalTo("EKTORP"));
   }
 
   @Test
