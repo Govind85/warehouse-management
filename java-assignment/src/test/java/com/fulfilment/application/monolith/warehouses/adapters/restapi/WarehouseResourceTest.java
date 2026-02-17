@@ -31,9 +31,9 @@ public class WarehouseResourceTest {
         .body("""
             {
               "businessUnitCode": "TEST-WH-001",
-              "location": "AMSTERDAM-001",
-              "capacity": 100,
-              "stock": 50
+              "location": "AMSTERDAM-002",
+              "capacity": 40,
+              "stock": 20
             }
             """)
         .when()
@@ -41,9 +41,9 @@ public class WarehouseResourceTest {
         .then()
         .statusCode(200)
         .body("businessUnitCode", equalTo("TEST-WH-001"))
-        .body("location", equalTo("AMSTERDAM-001"))
-        .body("capacity", equalTo(100))
-        .body("stock", equalTo(50));
+        .body("location", equalTo("AMSTERDAM-002"))
+        .body("capacity", equalTo(40))
+        .body("stock", equalTo(20));
   }
 
   @Test
@@ -56,8 +56,8 @@ public class WarehouseResourceTest {
             {
               "businessUnitCode": "%s",
               "location": "AMSTERDAM-002",
-              "capacity": 100,
-              "stock": 50
+              "capacity": 30,
+              "stock": 15
             }
             """, businessUnitCode))
         .when()
@@ -70,9 +70,9 @@ public class WarehouseResourceTest {
         .body(String.format("""
             {
               "businessUnitCode": "%s",
-              "location": "TILBURG-001",
-              "capacity": 150,
-              "stock": 75
+              "location": "HELMOND-001",
+              "capacity": 20,
+              "stock": 10
             }
             """, businessUnitCode))
         .when()
@@ -145,8 +145,8 @@ public class WarehouseResourceTest {
             {
               "businessUnitCode": "%s",
               "location": "EINDHOVEN-001",
-              "capacity": 100,
-              "stock": 50
+              "capacity": 50,
+              "stock": 25
             }
             """, businessUnitCode))
         .when()
@@ -181,8 +181,8 @@ public class WarehouseResourceTest {
             {
               "businessUnitCode": "%s",
               "location": "HELMOND-001",
-              "capacity": 100,
-              "stock": 50
+              "capacity": 35,
+              "stock": 15
             }
             """, businessUnitCode))
         .when()
@@ -222,44 +222,9 @@ public class WarehouseResourceTest {
         .body(String.format("""
             {
               "businessUnitCode": "%s",
-              "location": "TILBURG-001",
-              "capacity": 100,
-              "stock": 50
-            }
-            """, oldBusinessUnitCode))
-        .when()
-        .post("/warehouse")
-        .then()
-        .statusCode(200);
-
-    given()
-        .contentType(ContentType.JSON)
-        .body("""
-            {
-              "location": "VETSBY-001",
-              "capacity": 150,
-              "stock": 50
-            }
-            """)
-        .when()
-        .post("/warehouse/" + oldBusinessUnitCode + "/replacement")
-        .then()
-        .statusCode(200)
-        .body("businessUnitCode", equalTo(oldBusinessUnitCode));  // Same code reused!
-  }
-
-  @Test
-  void replaceWarehouse_stockMismatch_shouldFail() {
-    String oldBusinessUnitCode = "STOCK-MISMATCH-" + System.currentTimeMillis();
-    
-    given()
-        .contentType(ContentType.JSON)
-        .body(String.format("""
-            {
-              "businessUnitCode": "%s",
-              "location": "ZWOLLE-002",
-              "capacity": 100,
-              "stock": 50
+              "location": "HELMOND-001",
+              "capacity": 30,
+              "stock": 15
             }
             """, oldBusinessUnitCode))
         .when()
@@ -272,8 +237,43 @@ public class WarehouseResourceTest {
         .body("""
             {
               "location": "HELMOND-001",
-              "capacity": 150,
-              "stock": 75
+              "capacity": 35,
+              "stock": 15
+            }
+            """)
+        .when()
+        .post("/warehouse/" + oldBusinessUnitCode + "/replacement")
+        .then()
+        .statusCode(200)
+        .body("businessUnitCode", equalTo(oldBusinessUnitCode));
+  }
+
+  @Test
+  void replaceWarehouse_stockMismatch_shouldFail() {
+    String oldBusinessUnitCode = "STOCK-MISMATCH-" + System.currentTimeMillis();
+    
+    given()
+        .contentType(ContentType.JSON)
+        .body(String.format("""
+            {
+              "businessUnitCode": "%s",
+              "location": "VETSBY-001",
+              "capacity": 30,
+              "stock": 15
+            }
+            """, oldBusinessUnitCode))
+        .when()
+        .post("/warehouse")
+        .then()
+        .statusCode(200);
+
+    given()
+        .contentType(ContentType.JSON)
+        .body("""
+            {
+              "location": "VETSBY-001",
+              "capacity": 40,
+              "stock": 25
             }
             """)
         .when()
@@ -292,8 +292,8 @@ public class WarehouseResourceTest {
             {
               "businessUnitCode": "%s",
               "location": "ZWOLLE-002",
-              "capacity": 100,
-              "stock": 80
+              "capacity": 30,
+              "stock": 25
             }
             """, oldBusinessUnitCode))
         .when()
@@ -305,9 +305,9 @@ public class WarehouseResourceTest {
         .contentType(ContentType.JSON)
         .body("""
             {
-              "location": "AMSTERDAM-001",
-              "capacity": 50,
-              "stock": 80
+              "location": "ZWOLLE-002",
+              "capacity": 20,
+              "stock": 25
             }
             """)
         .when()

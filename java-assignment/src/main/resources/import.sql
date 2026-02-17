@@ -18,5 +18,5 @@ VALUES (2, 'MWH.012', 'AMSTERDAM-001', 50, 5, '2023-07-01', null);
 INSERT INTO warehouse(id, businessUnitCode, location, capacity, stock, createdAt, archivedAt)
 VALUES (3, 'MWH.023', 'TILBURG-001', 30, 27, '2021-02-01', null);
 INSERT INTO warehouse(id, businessUnitCode, location, capacity, stock, createdAt, archivedAt)
-VALUES (4, 'MWH.024', 'TILBURG-001', 30, 27, '2021-02-01', '2021-02-02');
+VALUES (4, 'MWH.024', 'TILBURG-002', 30, 27, '2021-02-01', '2021-02-02');
 ALTER SEQUENCE warehouse_seq RESTART WITH 5;

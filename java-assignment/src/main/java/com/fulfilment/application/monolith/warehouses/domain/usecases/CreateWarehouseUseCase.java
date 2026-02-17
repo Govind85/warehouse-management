@@ -13,9 +13,6 @@ import java.time.LocalDateTime;
 
 @ApplicationScoped
 public class CreateWarehouseUseCase implements CreateWarehouseOperation {
-  private static final int MAX_WAREHOUSES_PER_LOCATION = 3;
-  private static final int MAX_CAPACITY_PER_LOCATION = 1000;
-
   private final WarehouseStore warehouseStore;
   @Inject
   WarehouseRepository warehouseRepository;
@@ -49,15 +46,30 @@ public class CreateWarehouseUseCase implements CreateWarehouseOperation {
                     .filter(w -> w.location.equals(warehouse.location))
                     .count();
 
-    if (warehousesInLocation >= MAX_WAREHOUSES_PER_LOCATION) {
+    if (warehousesInLocation >= location.maxNumberOfWarehouses) {
       throw new WebApplicationException(
               "Maximum warehouses reached for location", 422);
     }
 
-    if (warehouse.capacity == null || warehouse.capacity <= 0
-            || warehouse.capacity > MAX_CAPACITY_PER_LOCATION) {
+    if (warehouse.capacity == null || warehouse.capacity <= 0) {
+      throw new WebApplicationException(
+              "Capacity must be greater than zero", 422);
+    }
+
+    if (warehouse.capacity > location.maxCapacity) {
       throw new WebApplicationException(
               "Capacity exceeds location maximum", 422);
+    }
+
+    int totalCapacityInLocation = warehouseRepository.getAll().stream()
+            .filter(w -> w.archivedAt == null)
+            .filter(w -> w.location.equals(warehouse.location))
+            .mapToInt(w -> w.capacity)
+            .sum();
+
+    if ((totalCapacityInLocation + warehouse.capacity) > location.maxCapacity) {
+      throw new WebApplicationException(
+              "Total capacity exceeds location maximum", 422);
     }
 
     if (warehouse.stock == null || warehouse.stock < 0
