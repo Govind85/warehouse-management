@@ -25,22 +25,13 @@ public class ReplaceWarehouseUseCase implements ReplaceWarehouseOperation {
   }
 
   @Override
-  public void replace(Warehouse newWarehouse, String businessUnitCode) {
-    var current = warehouseRepository.findByBusinessUnitCode(businessUnitCode);
+  public void replace(Warehouse newWarehouse) {
+    var current = warehouseRepository.findByBusinessUnitCode(newWarehouse.businessUnitCode);
 
     if (current == null) {
       throw new WebApplicationException(
               "Active warehouse not found", 404);
     }
-
-    if (newWarehouse.businessUnitCode != null && !newWarehouse.businessUnitCode.equals(businessUnitCode)) {
-      var existing = warehouseRepository.findByBusinessUnitCode(newWarehouse.businessUnitCode);
-      if (existing != null) {
-        throw new WebApplicationException(
-                "Business Unit Code already exists", 422);
-      }
-    }
-
     if (newWarehouse.location == null || newWarehouse.location.isBlank()) {
       throw new WebApplicationException("Invalid location", 422);
     }
@@ -53,7 +44,7 @@ public class ReplaceWarehouseUseCase implements ReplaceWarehouseOperation {
     long warehousesInLocation =
             warehouseRepository.getAll().stream()
                     .filter(w -> w.archivedAt == null)
-                    .filter(w -> !w.businessUnitCode.equals(businessUnitCode))
+                    .filter(w -> !w.businessUnitCode.equals(newWarehouse.businessUnitCode))
                     .filter(w -> w.location.equals(newWarehouse.location))
                     .count();
 
@@ -89,7 +80,7 @@ public class ReplaceWarehouseUseCase implements ReplaceWarehouseOperation {
 
     int totalCapacityInLocation = warehouseRepository.getAll().stream()
             .filter(w -> w.archivedAt == null)
-            .filter(w -> !w.businessUnitCode.equals(businessUnitCode))
+            .filter(w -> !w.businessUnitCode.equals(newWarehouse.businessUnitCode))
             .filter(w -> w.location.equals(newWarehouse.location))
             .mapToInt(w -> w.capacity)
             .sum();
@@ -103,8 +94,6 @@ public class ReplaceWarehouseUseCase implements ReplaceWarehouseOperation {
     current.archivedAt = LocalDateTime.now();
     warehouseRepository.update(current);
 
-    // Create new warehouse with SAME business unit code (reuse it)
-    newWarehouse.businessUnitCode = businessUnitCode;
     newWarehouse.createdAt = LocalDateTime.now();
     newWarehouse.archivedAt = null;
 

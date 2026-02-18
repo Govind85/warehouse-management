@@ -22,37 +22,50 @@ public class ReplaceWarehouseUseCaseTest {
   ReplaceWarehouseUseCase useCase;
 
   @Test
-  void replace_businessUnitCodeAlreadyExists_shouldFail() {
+  void replace_success_shouldPass() {
     Warehouse current = new Warehouse();
     current.businessUnitCode = "WH-001";
     current.stock = 50;
-
-    Warehouse existing = new Warehouse();
-    existing.businessUnitCode = "WH-002";
+    current.location = "AMSTERDAM-001";
 
     WarehouseRepository mockRepo = new WarehouseRepository() {
       @Override
       public Warehouse findByBusinessUnitCode(String buCode) {
         if ("WH-001".equals(buCode)) return current;
-        if ("WH-002".equals(buCode)) return existing;
         return null;
+      }
+      
+      @Override
+      public List<Warehouse> getAll() {
+        return new ArrayList<>();
+      }
+      
+      @Override
+      public void update(Warehouse warehouse) {
+      }
+      
+      @Override
+      public void create(Warehouse warehouse) {
+      }
+    };
+    
+    LocationGateway mockResolver = new LocationGateway() {
+      @Override
+      public Location resolveByIdentifier(String identifier) {
+        return new Location("AMSTERDAM-001", 5, 200);
       }
     };
     
     QuarkusMock.installMockForType(mockRepo, WarehouseRepository.class);
+    QuarkusMock.installMockForType(mockResolver, LocationGateway.class);
 
     Warehouse newWarehouse = new Warehouse();
-    newWarehouse.businessUnitCode = "WH-002";
+    newWarehouse.businessUnitCode = "WH-001";
     newWarehouse.location = "AMSTERDAM-001";
     newWarehouse.capacity = 100;
     newWarehouse.stock = 50;
 
-    WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-      useCase.replace(newWarehouse, "WH-001");
-    });
-
-    assertEquals(422, exception.getResponse().getStatus());
-    assertTrue(exception.getMessage().contains("Business Unit Code already exists"));
+    assertDoesNotThrow(() -> useCase.replace(newWarehouse));
   }
 
   @Test
@@ -67,12 +80,13 @@ public class ReplaceWarehouseUseCaseTest {
     QuarkusMock.installMockForType(mockRepo, WarehouseRepository.class);
 
     Warehouse newWarehouse = new Warehouse();
+    newWarehouse.businessUnitCode = "WH-001";
     newWarehouse.location = "AMSTERDAM-001";
     newWarehouse.capacity = 150;
     newWarehouse.stock = 50;
 
     WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-      useCase.replace(newWarehouse, "WH-001");
+      useCase.replace(newWarehouse);
     });
 
     assertEquals(404, exception.getResponse().getStatus());
@@ -108,12 +122,13 @@ public class ReplaceWarehouseUseCaseTest {
     QuarkusMock.installMockForType(mockResolver, LocationGateway.class);
 
     Warehouse newWarehouse = new Warehouse();
+    newWarehouse.businessUnitCode = "WH-001";
     newWarehouse.location = "AMSTERDAM-001";
     newWarehouse.capacity = 80;
     newWarehouse.stock = 75;
 
     WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-      useCase.replace(newWarehouse, "WH-001");
+      useCase.replace(newWarehouse);
     });
 
     assertEquals(422, exception.getResponse().getStatus());
@@ -130,17 +145,31 @@ public class ReplaceWarehouseUseCaseTest {
       public Warehouse findByBusinessUnitCode(String buCode) {
         return current;
       }
+      
+      @Override
+      public List<Warehouse> getAll() {
+        return new ArrayList<>();
+      }
+    };
+    
+    LocationGateway mockResolver = new LocationGateway() {
+      @Override
+      public Location resolveByIdentifier(String identifier) {
+        return new Location("AMSTERDAM-001", 5, 200);
+      }
     };
     
     QuarkusMock.installMockForType(mockRepo, WarehouseRepository.class);
+    QuarkusMock.installMockForType(mockResolver, LocationGateway.class);
 
     Warehouse newWarehouse = new Warehouse();
+    newWarehouse.businessUnitCode = "WH-001";
     newWarehouse.location = "AMSTERDAM-001";
     newWarehouse.capacity = 50;
     newWarehouse.stock = 100;
 
     WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-      useCase.replace(newWarehouse, "WH-001");
+      useCase.replace(newWarehouse);
     });
 
     assertEquals(422, exception.getResponse().getStatus());
@@ -158,17 +187,31 @@ public class ReplaceWarehouseUseCaseTest {
       public Warehouse findByBusinessUnitCode(String buCode) {
         return current;
       }
+      
+      @Override
+      public List<Warehouse> getAll() {
+        return new ArrayList<>();
+      }
+    };
+    
+    LocationGateway mockResolver = new LocationGateway() {
+      @Override
+      public Location resolveByIdentifier(String identifier) {
+        return new Location("ZWOLLE-001", 1, 100);
+      }
     };
     
     QuarkusMock.installMockForType(mockRepo, WarehouseRepository.class);
+    QuarkusMock.installMockForType(mockResolver, LocationGateway.class);
 
     Warehouse newWarehouse = new Warehouse();
+    newWarehouse.businessUnitCode = "WH-001";
     newWarehouse.location = "";
     newWarehouse.capacity = 100;
     newWarehouse.stock = 50;
 
     WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-      useCase.replace(newWarehouse, "WH-001");
+      useCase.replace(newWarehouse);
     });
 
     assertEquals(422, exception.getResponse().getStatus());
@@ -186,6 +229,11 @@ public class ReplaceWarehouseUseCaseTest {
       public Warehouse findByBusinessUnitCode(String buCode) {
         return current;
       }
+      
+      @Override
+      public List<Warehouse> getAll() {
+        return new ArrayList<>();
+      }
     };
     
     LocationGateway mockResolver = new LocationGateway() {
@@ -199,12 +247,13 @@ public class ReplaceWarehouseUseCaseTest {
     QuarkusMock.installMockForType(mockResolver, LocationGateway.class);
 
     Warehouse newWarehouse = new Warehouse();
+    newWarehouse.businessUnitCode = "WH-001";
     newWarehouse.location = "INVALID-LOC";
     newWarehouse.capacity = 100;
     newWarehouse.stock = 50;
 
     WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-      useCase.replace(newWarehouse, "INVALID-LOC");
+      useCase.replace(newWarehouse);
     });
 
     assertEquals(422, exception.getResponse().getStatus());
@@ -240,12 +289,13 @@ public class ReplaceWarehouseUseCaseTest {
     QuarkusMock.installMockForType(mockResolver, LocationGateway.class);
 
     Warehouse newWarehouse = new Warehouse();
+    newWarehouse.businessUnitCode = "WH-001";
     newWarehouse.location = "ZWOLLE-001";
     newWarehouse.capacity = 0;
     newWarehouse.stock = 50;
 
     WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-      useCase.replace(newWarehouse, "WH-001");
+      useCase.replace(newWarehouse);
     });
 
     assertEquals(422, exception.getResponse().getStatus());
@@ -281,12 +331,13 @@ public class ReplaceWarehouseUseCaseTest {
     QuarkusMock.installMockForType(mockResolver, LocationGateway.class);
 
     Warehouse newWarehouse = new Warehouse();
+    newWarehouse.businessUnitCode = "WH-001";
     newWarehouse.location = "ZWOLLE-001";
     newWarehouse.capacity = 100;
     newWarehouse.stock = -10;
 
     WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-      useCase.replace(newWarehouse, "WH-001");
+      useCase.replace(newWarehouse);
     });
 
     assertEquals(422, exception.getResponse().getStatus());
@@ -331,12 +382,13 @@ public class ReplaceWarehouseUseCaseTest {
     QuarkusMock.installMockForType(mockResolver, LocationGateway.class);
 
     Warehouse newWarehouse = new Warehouse();
+    newWarehouse.businessUnitCode = "WH-001";
     newWarehouse.location = "ZWOLLE-001";
     newWarehouse.capacity = 50;
     newWarehouse.stock = 50;
 
     WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-      useCase.replace(newWarehouse, "WH-001");
+      useCase.replace(newWarehouse);
     });
 
     assertEquals(422, exception.getResponse().getStatus());

@@ -172,6 +172,38 @@ public class WarehouseResourceTest {
   }
 
   @Test
+  void getWarehouseById_archived_shouldFail() {
+    String businessUnitCode = "ARCHIVED-WH-" + System.currentTimeMillis();
+    
+    given()
+        .contentType(ContentType.JSON)
+        .body(String.format("""
+            {
+              "businessUnitCode": "%s",
+              "location": "EINDHOVEN-001",
+              "capacity": 50,
+              "stock": 25
+            }
+            """, businessUnitCode))
+        .when()
+        .post("/warehouse")
+        .then()
+        .statusCode(200);
+
+    given()
+        .when()
+        .delete("/warehouse/" + businessUnitCode)
+        .then()
+        .statusCode(204);
+
+    given()
+        .when()
+        .get("/warehouse/" + businessUnitCode)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
   void archiveWarehouse_success() {
     String businessUnitCode = "ARCHIVE-WH-" + System.currentTimeMillis();
     
@@ -322,7 +354,6 @@ public class WarehouseResourceTest {
         .contentType(ContentType.JSON)
         .body("""
             {
-              "businessUnitCode": "NEW-WH-001",
               "location": "EINDHOVEN-001",
               "capacity": 150,
               "stock": 50

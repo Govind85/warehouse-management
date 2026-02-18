@@ -62,7 +62,8 @@ public class WarehouseResourceImpl implements com.warehouse.api.WarehouseResourc
   public com.warehouse.api.beans.Warehouse replaceTheCurrentActiveWarehouse(
       String businessUnitCode, @NotNull com.warehouse.api.beans.Warehouse data) {
     var warehouse = toDomainWarehouse(data);
-    replaceWarehouseUseCase.replace(warehouse, businessUnitCode);
+    warehouse.businessUnitCode = businessUnitCode;
+    replaceWarehouseUseCase.replace(warehouse);
     return toWarehouseResponse(warehouse);
   }
 
